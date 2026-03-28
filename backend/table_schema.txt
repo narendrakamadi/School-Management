@@ -1,0 +1,264 @@
+users
+-----
+id (PK)
+uuid (unique)
+first_name
+last_name
+email (unique, indexed)
+username (unique, indexed)
+hashed_password
+phone
+
+is_active (boolean default true)
+is_verified (boolean default false)
+
+last_login
+created_at
+updated_at
+
+-- Flexible extension
+extra_data JSONB   -- for future fields
+
+----------------------------------------------------------------------------------------------------
+
+roles
+-----
+id (PK)
+name (unique)        -- admin, teacher, student
+description
+is_system (boolean)  -- protect core roles
+
+----------------------------------------------------------------------------------------------------
+
+user_roles
+----------
+user_id (FK -> users.id)
+role_id (FK -> roles.id)
+PRIMARY KEY (user_id, role_id)
+
+----------------------------------------------------------------------------------------------------
+
+permissions
+-----------
+id (PK)
+name (unique)        -- create_student
+module               -- student, exam
+action               -- create, read, update, delete
+
+----------------------------------------------------------------------------------------------------
+
+role_permissions
+----------------
+role_id (FK)
+permission_id (FK)
+PRIMARY KEY (role_id, permission_id)
+
+----------------------------------------------------------------------------------------------------
+
+user_permissions
+----------------
+user_id (FK)
+permission_id (FK)
+is_allowed (boolean)
+PRIMARY KEY (user_id, permission_id)
+
+----------------------------------------------------------------------------------------------------
+
+students
+--------
+id (PK)
+user_id (FK -> users.id, UNIQUE)
+
+admission_number (unique)
+roll_number
+
+class_id (FK)
+section_id (FK)
+
+date_of_birth
+gender
+
+admission_date
+academic_year
+
+parent_id (FK -> parents.id)
+
+address
+status
+
+extra_data JSONB
+created_at
+
+----------------------------------------------------------------------------------------------------
+
+teachers
+--------
+id (PK)
+user_id (FK -> users.id, UNIQUE)
+
+employee_id (unique)
+qualification
+experience_years
+
+department_id (FK)
+
+joining_date
+salary
+
+status
+extra_data JSONB
+created_at
+
+----------------------------------------------------------------------------------------------------
+
+staff
+-----
+id (PK)
+user_id (FK -> users.id, UNIQUE)
+
+employee_id (unique)
+designation
+department_id (FK)
+
+joining_date
+salary
+shift_timing
+
+status
+extra_data JSONB
+created_at
+
+----------------------------------------------------------------------------------------------------
+
+parents
+-------
+id (PK)
+user_id (FK -> users.id, UNIQUE)
+
+occupation
+annual_income
+relation_type
+
+address
+
+extra_data JSONB
+created_at
+
+----------------------------------------------------------------------------------------------------
+classes
+-------
+id (PK)
+name
+
+----------------------------------------------------------------------------------------------------
+
+sections
+--------
+id (PK)
+class_id (FK)
+name
+
+----------------------------------------------------------------------------------------------------
+
+subjects
+--------
+id (PK)
+name
+code
+
+----------------------------------------------------------------------------------------------------
+
+departments
+-----------
+id (PK)
+name
+
+----------------------------------------------------------------------------------------------------
+
+teacher_assignments
+-------------------
+id (PK)
+teacher_id (FK)
+class_id (FK)
+section_id (FK)
+subject_id (FK)
+
+----------------------------------------------------------------------------------------------------
+
+attendance
+----------
+id (PK)
+student_id (FK)
+date
+status
+
+UNIQUE(student_id, date)
+
+----------------------------------------------------------------------------------------------------
+exams
+-----
+id (PK)
+name
+exam_type
+start_date
+end_date
+
+----------------------------------------------------------------------------------------------------
+marks
+-----
+id (PK)
+student_id (FK)
+subject_id (FK)
+exam_id (FK)
+
+marks_obtained
+max_marks
+grade
+
+UNIQUE(student_id, subject_id, exam_id)
+
+----------------------------------------------------------------------------------------------------
+
+fees
+----
+id (PK)
+student_id (FK)
+amount
+due_date
+status
+
+----------------------------------------------------------------------------------------------------
+
+payments
+--------
+id (PK)
+fee_id (FK)
+amount_paid
+payment_date
+payment_mode
+transaction_id
+
+----------------------------------------------------------------------------------------------------
+
+menus
+-----
+id (PK)
+name
+path
+icon
+parent_id (FK -> menus.id)
+order_index
+
+----------------------------------------------------------------------------------------------------
+
+role_menus
+----------
+role_id (FK)
+menu_id (FK)
+PRIMARY KEY (role_id, menu_id)
+
+----------------------------------------------------------------------------------------------------
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_students_class ON students(class_id);
+CREATE INDEX idx_attendance_date ON attendance(date);

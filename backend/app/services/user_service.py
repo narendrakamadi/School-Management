@@ -22,6 +22,9 @@ class UserService:
     def has_users(self, db: Session) -> bool:
         return self.repo.count_all(db) > 0
 
+    def list_users(self, db: Session):
+        return self.repo.list_all(db)
+
     def create_user(self, db: Session, data: UserCreate):
         roles = self.role_repo.get_by_ids(db, data.role_ids)
 

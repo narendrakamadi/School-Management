@@ -11,6 +11,11 @@ router = APIRouter()
 service = UserService()
 
 
+@router.get("/", response_model=list[UserOut], dependencies=[Depends(require_roles(ADMIN, SUPERADMIN))])
+def list_users(db: Session = Depends(get_db)):
+    return service.list_users(db)
+
+
 @router.post("/bootstrap", response_model=UserOut)
 def bootstrap_user(data: UserCreate, db: Session = Depends(get_db)):
     if service.has_users(db):

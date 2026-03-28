@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 
 from app.db.base import Base
@@ -13,6 +14,14 @@ app = FastAPI(
     title="School Management API",
     description="API for managing users, roles, students, and teachers with RBAC support",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Create tables

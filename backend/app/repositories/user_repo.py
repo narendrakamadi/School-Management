@@ -17,6 +17,17 @@ class UserRepository:
         db.refresh(user)
         return user
 
+    def list_all(self, db: Session):
+        return (
+            db.query(User)
+            .options(
+                selectinload(User.roles).selectinload(Role.permissions),
+                selectinload(User.permission_overrides).selectinload(UserPermission.permission),
+            )
+            .order_by(User.id.asc())
+            .all()
+        )
+
     def get_by_id(self, db: Session, user_id: int):
         return (
             db.query(User)

@@ -8,6 +8,7 @@ class Fee(Base):
     __tablename__ = "fees"
 
     id = Column(Integer, primary_key=True)
+    school_id = Column(Integer, ForeignKey("schools.id", ondelete="CASCADE"), nullable=False, index=True)
     student_id = Column(Integer, ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
     amount = Column(Integer, nullable=False)
     due_date = Column(Date)

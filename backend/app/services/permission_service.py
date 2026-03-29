@@ -41,10 +41,27 @@ class PermissionService:
     def list_permissions(self, db: Session):
         return self.permission_repo.list_all(db)
 
-    def set_role_permissions(self, db: Session, role_id: int, permission_ids: list[int]):
+    @staticmethod
+    def _assert_role_scope_access(role, actor):
+        if actor is None or getattr(actor, "is_super_admin", False):
+            return
+
+        if role.scope != "SCHOOL" or role.school_id != actor.school_id:
+            raise HTTPException(status_code=403, detail="Role does not belong to your school")
+
+    @staticmethod
+    def _assert_user_scope_access(user, actor):
+        if actor is None or getattr(actor, "is_super_admin", False):
+            return
+
+        if user.school_id != actor.school_id:
+            raise HTTPException(status_code=403, detail="User does not belong to your school")
+
+    def set_role_permissions(self, db: Session, role_id: int, permission_ids: list[int], actor=None):
         role = self.role_repo.get_by_id(db, role_id)
         if not role:
             raise HTTPException(status_code=404, detail="Role not found")
+        self._assert_role_scope_access(role, actor)
 
         unique_permission_ids = list(dict.fromkeys(permission_ids))
         permissions = self.permission_repo.get_by_ids(db, unique_permission_ids)
@@ -56,17 +73,19 @@ class PermissionService:
         role = self.role_repo.save(db, role)
         return self._build_role_permission_response(role)
 
-    def get_role_permissions(self, db: Session, role_id: int):
+    def get_role_permissions(self, db: Session, role_id: int, actor=None):
         role = self.role_repo.get_by_id(db, role_id)
         if not role:
             raise HTTPException(status_code=404, detail="Role not found")
+        self._assert_role_scope_access(role, actor)
 
         return self._build_role_permission_response(role)
 
-    def set_user_permissions(self, db: Session, user_id: int, data: UserPermissionUpdate):
+    def set_user_permissions(self, db: Session, user_id: int, data: UserPermissionUpdate, actor=None):
         user = self.user_repo.get_by_id(db, user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        self._assert_user_scope_access(user, actor)
 
         assignment_map: dict[int, bool] = {}
         for assignment in data.permissions:
@@ -93,26 +112,33 @@ class PermissionService:
         user = self.user_repo.get_by_id(db, user_id)
         return self._build_user_permission_response(user)
 
-    def get_user_permissions(self, db: Session, user_id: int):
+    def get_user_permissions(self, db: Session, user_id: int, actor=None):
         user = self.user_repo.get_by_id(db, user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        self._assert_user_scope_access(user, actor)
 
         return self._build_user_permission_response(user)
 
-    def get_effective_permissions(self, db: Session, user_id: int):
+    def get_effective_permissions(self, db: Session, user_id: int, actor=None):
         user = self.user_repo.get_by_id(db, user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+        self._assert_user_scope_access(user, actor)
+
+        if actor is not None and not getattr(actor, "is_super_admin", False):
+            setattr(user, "active_school_id", actor.school_id)
 
         return self.build_effective_permission_response(user)
 
     def build_effective_permission_response(self, user) -> EffectivePermissionResponse:
+        active_school_id = getattr(user, "active_school_id", None) or getattr(user, "school_id", None)
         return EffectivePermissionResponse(
             user_id=user.id,
             username=user.username,
+            school_id=active_school_id,
             roles=sorted(role.name for role in user.roles),
-            permissions=get_effective_permission_names(user),
+            permissions=get_effective_permission_names(user, school_id=active_school_id),
         )
 
     def _build_role_permission_response(self, role) -> RolePermissionResponse:

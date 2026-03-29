@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user_with_school_context
 from app.db.session import get_db
 from app.rbac.dependencies import require_any_permission
 from app.schemas.common import DeleteResponse
@@ -32,11 +33,20 @@ def delete_menu(menu_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/role-menus/{role_id}", response_model=RoleMenuResponse, dependencies=[Depends(require_any_permission("update_menus", "update_roles"))])
-def set_role_menus(role_id: int, data: RoleMenuUpdate, db: Session = Depends(get_db)):
-    return service.set_role_menus(db, role_id, data.menu_ids)
+def set_role_menus(
+    role_id: int,
+    data: RoleMenuUpdate,
+    db: Session = Depends(get_db),
+    context=Depends(get_current_user_with_school_context),
+):
+    return service.set_role_menus(db, role_id, data.menu_ids, actor=context.user)
 
 
 @router.get("/role-menus/{role_id}", response_model=RoleMenuResponse, dependencies=[Depends(require_any_permission("read_menus", "read_roles"))])
-def get_role_menus(role_id: int, db: Session = Depends(get_db)):
-    return service.get_role_menus(db, role_id)
+def get_role_menus(
+    role_id: int,
+    db: Session = Depends(get_db),
+    context=Depends(get_current_user_with_school_context),
+):
+    return service.get_role_menus(db, role_id, actor=context.user)
 

@@ -9,6 +9,8 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    school_id: int | None = None
+    is_super_admin: bool = False
     roles: list[str] = Field(default_factory=list)
     permissions: list[str] = Field(default_factory=list)
 

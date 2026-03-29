@@ -29,10 +29,19 @@ class MenuService:
         self.menu_repo.delete(db, menu)
         return {"message": "Menu deleted"}
 
-    def set_role_menus(self, db: Session, role_id: int, menu_ids: list[int]):
+    @staticmethod
+    def _assert_role_scope_access(role, actor):
+        if actor is None or getattr(actor, "is_super_admin", False):
+            return
+
+        if role.scope != "SCHOOL" or role.school_id != actor.school_id:
+            raise HTTPException(status_code=403, detail="Role does not belong to your school")
+
+    def set_role_menus(self, db: Session, role_id: int, menu_ids: list[int], actor=None):
         role = self.role_repo.get_by_id(db, role_id)
         if not role:
             raise HTTPException(status_code=404, detail="Role not found")
+        self._assert_role_scope_access(role, actor)
 
         unique_menu_ids = list(dict.fromkeys(menu_ids))
         menus = db.query(Menu).filter(Menu.id.in_(unique_menu_ids)).all() if unique_menu_ids else []
@@ -43,10 +52,11 @@ class MenuService:
         role = self.role_repo.save(db, role)
         return RoleMenuResponse(role=role, menus=sorted(role.menus, key=lambda menu: menu.id))
 
-    def get_role_menus(self, db: Session, role_id: int):
+    def get_role_menus(self, db: Session, role_id: int, actor=None):
         role = self.role_repo.get_by_id(db, role_id)
         if not role:
             raise HTTPException(status_code=404, detail="Role not found")
+        self._assert_role_scope_access(role, actor)
 
         return RoleMenuResponse(role=role, menus=sorted(role.menus, key=lambda menu: menu.id))
 

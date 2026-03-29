@@ -11,6 +11,7 @@ from app.models.payment import Payment
 from app.models.role import Role
 from app.models.role_menu import RoleMenu
 from app.models.revoked_token import RevokedToken
+from app.models.school import School
 from app.models.school_class import SchoolClass
 from app.models.section import Section
 from app.models.staff import Staff
@@ -46,4 +47,5 @@ __all__ = [
 	"UserPermission",
 	"RoleMenu",
 	"RevokedToken",
+	"School",
 ]

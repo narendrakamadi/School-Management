@@ -9,6 +9,7 @@ class Staff(Base):
 	__tablename__ = "staff"
 
 	id = Column(Integer, primary_key=True)
+	school_id = Column(Integer, ForeignKey("schools.id", ondelete="CASCADE"), nullable=False, index=True)
 	user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
 	employee_id = Column(String, unique=True)
 	designation = Column(String)

@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DB_CONNECTION: str
+    AUTO_INIT_DB: bool = False
 
     SECRET_KEY: str
     ALGORITHM: str

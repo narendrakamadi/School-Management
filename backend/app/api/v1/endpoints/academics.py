@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.dependencies import get_current_user_with_school_context
 from app.db.session import get_db
 from app.models.attendance import Attendance
 from app.models.department import Department
@@ -45,161 +46,161 @@ mark_service = GenericService(Mark, "Mark not found")
 
 
 @router.post("/classes", response_model=ClassOut, dependencies=[Depends(require_any_permission("create_classes"))])
-def create_class(data: ClassCreate, db: Session = Depends(get_db)):
-    return class_service.create(db, data)
+def create_class(data: ClassCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return class_service.create(db, data, current_user=context.user)
 
 
 @router.get("/classes", response_model=list[ClassOut], dependencies=[Depends(require_any_permission("read_classes"))])
-def list_classes(db: Session = Depends(get_db)):
-    return class_service.list_all(db)
+def list_classes(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return class_service.list_all(db, current_user=context.user)
 
 
 @router.get("/classes/{class_id}", response_model=ClassOut, dependencies=[Depends(require_any_permission("read_classes"))])
-def get_class(class_id: int, db: Session = Depends(get_db)):
-    return class_service.get(db, class_id)
+def get_class(class_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return class_service.get(db, class_id, current_user=context.user)
 
 
 @router.delete("/classes/{class_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_classes"))])
-def delete_class(class_id: int, db: Session = Depends(get_db)):
-    return class_service.delete(db, class_id)
+def delete_class(class_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return class_service.delete(db, class_id, current_user=context.user)
 
 
 @router.post("/sections", response_model=SectionOut, dependencies=[Depends(require_any_permission("create_sections"))])
-def create_section(data: SectionCreate, db: Session = Depends(get_db)):
-    return section_service.create(db, data)
+def create_section(data: SectionCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return section_service.create(db, data, current_user=context.user)
 
 
 @router.get("/sections", response_model=list[SectionOut], dependencies=[Depends(require_any_permission("read_sections"))])
-def list_sections(db: Session = Depends(get_db)):
-    return section_service.list_all(db)
+def list_sections(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return section_service.list_all(db, current_user=context.user)
 
 
 @router.get("/sections/{section_id}", response_model=SectionOut, dependencies=[Depends(require_any_permission("read_sections"))])
-def get_section(section_id: int, db: Session = Depends(get_db)):
-    return section_service.get(db, section_id)
+def get_section(section_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return section_service.get(db, section_id, current_user=context.user)
 
 
 @router.delete("/sections/{section_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_sections"))])
-def delete_section(section_id: int, db: Session = Depends(get_db)):
-    return section_service.delete(db, section_id)
+def delete_section(section_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return section_service.delete(db, section_id, current_user=context.user)
 
 
 @router.post("/subjects", response_model=SubjectOut, dependencies=[Depends(require_any_permission("create_subjects"))])
-def create_subject(data: SubjectCreate, db: Session = Depends(get_db)):
-    return subject_service.create(db, data)
+def create_subject(data: SubjectCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return subject_service.create(db, data, current_user=context.user)
 
 
 @router.get("/subjects", response_model=list[SubjectOut], dependencies=[Depends(require_any_permission("read_subjects"))])
-def list_subjects(db: Session = Depends(get_db)):
-    return subject_service.list_all(db)
+def list_subjects(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return subject_service.list_all(db, current_user=context.user)
 
 
 @router.get("/subjects/{subject_id}", response_model=SubjectOut, dependencies=[Depends(require_any_permission("read_subjects"))])
-def get_subject(subject_id: int, db: Session = Depends(get_db)):
-    return subject_service.get(db, subject_id)
+def get_subject(subject_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return subject_service.get(db, subject_id, current_user=context.user)
 
 
 @router.delete("/subjects/{subject_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_subjects"))])
-def delete_subject(subject_id: int, db: Session = Depends(get_db)):
-    return subject_service.delete(db, subject_id)
+def delete_subject(subject_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return subject_service.delete(db, subject_id, current_user=context.user)
 
 
 @router.post("/departments", response_model=DepartmentOut, dependencies=[Depends(require_any_permission("create_departments"))])
-def create_department(data: DepartmentCreate, db: Session = Depends(get_db)):
-    return department_service.create(db, data)
+def create_department(data: DepartmentCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return department_service.create(db, data, current_user=context.user)
 
 
 @router.get("/departments", response_model=list[DepartmentOut], dependencies=[Depends(require_any_permission("read_departments"))])
-def list_departments(db: Session = Depends(get_db)):
-    return department_service.list_all(db)
+def list_departments(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return department_service.list_all(db, current_user=context.user)
 
 
 @router.get("/departments/{department_id}", response_model=DepartmentOut, dependencies=[Depends(require_any_permission("read_departments"))])
-def get_department(department_id: int, db: Session = Depends(get_db)):
-    return department_service.get(db, department_id)
+def get_department(department_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return department_service.get(db, department_id, current_user=context.user)
 
 
 @router.delete("/departments/{department_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_departments"))])
-def delete_department(department_id: int, db: Session = Depends(get_db)):
-    return department_service.delete(db, department_id)
+def delete_department(department_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return department_service.delete(db, department_id, current_user=context.user)
 
 
 @router.post("/teacher-assignments", response_model=TeacherAssignmentOut, dependencies=[Depends(require_any_permission("create_teacher_assignments"))])
-def create_teacher_assignment(data: TeacherAssignmentCreate, db: Session = Depends(get_db)):
-    return teacher_assignment_service.create(db, data)
+def create_teacher_assignment(data: TeacherAssignmentCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return teacher_assignment_service.create(db, data, current_user=context.user)
 
 
 @router.get("/teacher-assignments", response_model=list[TeacherAssignmentOut], dependencies=[Depends(require_any_permission("read_teacher_assignments"))])
-def list_teacher_assignments(db: Session = Depends(get_db)):
-    return teacher_assignment_service.list_all(db)
+def list_teacher_assignments(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return teacher_assignment_service.list_all(db, current_user=context.user)
 
 
 @router.get("/teacher-assignments/{assignment_id}", response_model=TeacherAssignmentOut, dependencies=[Depends(require_any_permission("read_teacher_assignments"))])
-def get_teacher_assignment(assignment_id: int, db: Session = Depends(get_db)):
-    return teacher_assignment_service.get(db, assignment_id)
+def get_teacher_assignment(assignment_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return teacher_assignment_service.get(db, assignment_id, current_user=context.user)
 
 
 @router.delete("/teacher-assignments/{assignment_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_teacher_assignments"))])
-def delete_teacher_assignment(assignment_id: int, db: Session = Depends(get_db)):
-    return teacher_assignment_service.delete(db, assignment_id)
+def delete_teacher_assignment(assignment_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return teacher_assignment_service.delete(db, assignment_id, current_user=context.user)
 
 
 @router.post("/attendance", response_model=AttendanceOut, dependencies=[Depends(require_any_permission("create_attendance"))])
-def create_attendance(data: AttendanceCreate, db: Session = Depends(get_db)):
-    return attendance_service.create(db, data)
+def create_attendance(data: AttendanceCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return attendance_service.create(db, data, current_user=context.user)
 
 
 @router.get("/attendance", response_model=list[AttendanceOut], dependencies=[Depends(require_any_permission("read_attendance"))])
-def list_attendance(db: Session = Depends(get_db)):
-    return attendance_service.list_all(db)
+def list_attendance(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return attendance_service.list_all(db, current_user=context.user)
 
 
 @router.get("/attendance/{attendance_id}", response_model=AttendanceOut, dependencies=[Depends(require_any_permission("read_attendance"))])
-def get_attendance(attendance_id: int, db: Session = Depends(get_db)):
-    return attendance_service.get(db, attendance_id)
+def get_attendance(attendance_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return attendance_service.get(db, attendance_id, current_user=context.user)
 
 
 @router.delete("/attendance/{attendance_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_attendance"))])
-def delete_attendance(attendance_id: int, db: Session = Depends(get_db)):
-    return attendance_service.delete(db, attendance_id)
+def delete_attendance(attendance_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return attendance_service.delete(db, attendance_id, current_user=context.user)
 
 
 @router.post("/exams", response_model=ExamOut, dependencies=[Depends(require_any_permission("create_exams"))])
-def create_exam(data: ExamCreate, db: Session = Depends(get_db)):
-    return exam_service.create(db, data)
+def create_exam(data: ExamCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return exam_service.create(db, data, current_user=context.user)
 
 
 @router.get("/exams", response_model=list[ExamOut], dependencies=[Depends(require_any_permission("read_exams"))])
-def list_exams(db: Session = Depends(get_db)):
-    return exam_service.list_all(db)
+def list_exams(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return exam_service.list_all(db, current_user=context.user)
 
 
 @router.get("/exams/{exam_id}", response_model=ExamOut, dependencies=[Depends(require_any_permission("read_exams"))])
-def get_exam(exam_id: int, db: Session = Depends(get_db)):
-    return exam_service.get(db, exam_id)
+def get_exam(exam_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return exam_service.get(db, exam_id, current_user=context.user)
 
 
 @router.delete("/exams/{exam_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_exams"))])
-def delete_exam(exam_id: int, db: Session = Depends(get_db)):
-    return exam_service.delete(db, exam_id)
+def delete_exam(exam_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return exam_service.delete(db, exam_id, current_user=context.user)
 
 
 @router.post("/marks", response_model=MarkOut, dependencies=[Depends(require_any_permission("create_marks"))])
-def create_mark(data: MarkCreate, db: Session = Depends(get_db)):
-    return mark_service.create(db, data)
+def create_mark(data: MarkCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return mark_service.create(db, data, current_user=context.user)
 
 
 @router.get("/marks", response_model=list[MarkOut], dependencies=[Depends(require_any_permission("read_marks"))])
-def list_marks(db: Session = Depends(get_db)):
-    return mark_service.list_all(db)
+def list_marks(db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return mark_service.list_all(db, current_user=context.user)
 
 
 @router.get("/marks/{mark_id}", response_model=MarkOut, dependencies=[Depends(require_any_permission("read_marks"))])
-def get_mark(mark_id: int, db: Session = Depends(get_db)):
-    return mark_service.get(db, mark_id)
+def get_mark(mark_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return mark_service.get(db, mark_id, current_user=context.user)
 
 
 @router.delete("/marks/{mark_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_marks"))])
-def delete_mark(mark_id: int, db: Session = Depends(get_db)):
-    return mark_service.delete(db, mark_id)
+def delete_mark(mark_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return mark_service.delete(db, mark_id, current_user=context.user)
 

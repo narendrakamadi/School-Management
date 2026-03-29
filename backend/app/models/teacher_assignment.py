@@ -8,6 +8,7 @@ class TeacherAssignment(Base):
     __tablename__ = "teacher_assignments"
 
     id = Column(Integer, primary_key=True)
+    school_id = Column(Integer, ForeignKey("schools.id", ondelete="CASCADE"), nullable=False, index=True)
     teacher_id = Column(Integer, ForeignKey("teachers.id", ondelete="CASCADE"), nullable=False)
     class_id = Column(Integer, ForeignKey("classes.id", ondelete="CASCADE"), nullable=False)
     section_id = Column(Integer, ForeignKey("sections.id", ondelete="CASCADE"), nullable=False)

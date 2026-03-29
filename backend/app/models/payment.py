@@ -8,6 +8,7 @@ class Payment(Base):
     __tablename__ = "payments"
 
     id = Column(Integer, primary_key=True)
+    school_id = Column(Integer, ForeignKey("schools.id", ondelete="CASCADE"), nullable=False, index=True)
     fee_id = Column(Integer, ForeignKey("fees.id", ondelete="CASCADE"), nullable=False)
     amount_paid = Column(Integer, nullable=False)
     payment_date = Column(Date)

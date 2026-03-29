@@ -50,5 +50,6 @@ class UserPermissionResponse(BaseModel):
 class EffectivePermissionResponse(BaseModel):
     user_id: int
     username: str
+    school_id: int | None = None
     roles: list[str] = Field(default_factory=list)
     permissions: list[str] = Field(default_factory=list)

@@ -50,11 +50,22 @@ class AuthService:
             return None
 
         roles = [role.name for role in user.roles]
-        permissions = get_effective_permission_names(user)
-        token = create_access_token({"sub": str(user.id), "roles": roles, "permissions": permissions})
+        school_id = user.school_id
+        permissions = get_effective_permission_names(user, school_id=school_id)
+        token = create_access_token(
+            {
+                "sub": str(user.id),
+                "roles": roles,
+                "permissions": permissions,
+                "school_id": school_id,
+                "is_super_admin": bool(user.is_super_admin),
+            }
+        )
         return {
             "access_token": token,
             "token_type": "bearer",
+            "school_id": school_id,
+            "is_super_admin": bool(user.is_super_admin),
             "roles": roles,
             "permissions": permissions,
         }

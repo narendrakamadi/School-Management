@@ -9,6 +9,7 @@ class Parent(Base):
 	__tablename__ = "parents"
 
 	id = Column(Integer, primary_key=True)
+	school_id = Column(Integer, ForeignKey("schools.id", ondelete="CASCADE"), nullable=False, index=True)
 	user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
 	occupation = Column(String)
 	annual_income = Column(Integer)

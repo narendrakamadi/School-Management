@@ -105,6 +105,9 @@ source .venv/bin/activate
 ```bash
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
+
+# apply DB migrations
+.venv/bin/alembic upgrade head
 ```
 
 ### Start the API
@@ -141,9 +144,28 @@ FastAPI automatically exposes interactive docs:
 When the application starts:
 
 1. All SQLAlchemy models are imported from `app/models/__init__.py`
-2. Tables are created using:
-   - `Base.metadata.create_all(bind=engine)`
-3. Default roles and permissions are seeded by `app/db/init_db.py`
+2. A lightweight compatibility patch may run for legacy schemas
+3. If `AUTO_INIT_DB=true`, tables are created and seeded by `app/db/init_db.py`
+
+### Recommended migration workflow (Alembic)
+
+Use Alembic for all schema changes:
+
+```bash
+.venv/bin/alembic upgrade head
+```
+
+Create a new migration after model updates:
+
+```bash
+.venv/bin/alembic revision --autogenerate -m "describe_change"
+```
+
+Rollback one migration:
+
+```bash
+.venv/bin/alembic downgrade -1
+```
 
 ### Seeded roles
 

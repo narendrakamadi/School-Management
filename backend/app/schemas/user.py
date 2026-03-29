@@ -10,6 +10,8 @@ class UserCreate(BaseModel):
     username: str
     password: str
     role_ids: list[int] = Field(default_factory=list)
+    school_id: int | None = None
+    is_super_admin: bool = False
 
 
 class UserOut(BaseModel):
@@ -18,6 +20,8 @@ class UserOut(BaseModel):
     last_name: str | None = None
     email: str
     username: str
+    school_id: int | None = None
+    is_super_admin: bool = False
     roles: list[RoleOut] = Field(default_factory=list)
 
     class Config:

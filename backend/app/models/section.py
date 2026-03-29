@@ -8,6 +8,7 @@ class Section(Base):
     __tablename__ = "sections"
 
     id = Column(Integer, primary_key=True)
+    school_id = Column(Integer, ForeignKey("schools.id", ondelete="CASCADE"), nullable=False, index=True)
     class_id = Column(Integer, ForeignKey("classes.id", ondelete="CASCADE"), nullable=False)
     name = Column(String, nullable=False)
 

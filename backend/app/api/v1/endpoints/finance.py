@@ -30,6 +30,11 @@ def get_fee(fee_id: int, db: Session = Depends(get_db)):
     return fee_service.get(db, fee_id)
 
 
+@router.put("/fees/{fee_id}", response_model=FeeOut, dependencies=[Depends(require_any_permission("update_fees"))])
+def update_fee(fee_id: int, data: FeeCreate, db: Session = Depends(get_db)):
+    return fee_service.update(db, fee_id, data)
+
+
 @router.delete("/fees/{fee_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_fees"))])
 def delete_fee(fee_id: int, db: Session = Depends(get_db)):
     return fee_service.delete(db, fee_id)
@@ -48,6 +53,11 @@ def list_payments(db: Session = Depends(get_db)):
 @router.get("/payments/{payment_id}", response_model=PaymentOut, dependencies=[Depends(require_any_permission("read_payments"))])
 def get_payment(payment_id: int, db: Session = Depends(get_db)):
     return payment_service.get(db, payment_id)
+
+
+@router.put("/payments/{payment_id}", response_model=PaymentOut, dependencies=[Depends(require_any_permission("update_payments"))])
+def update_payment(payment_id: int, data: PaymentCreate, db: Session = Depends(get_db)):
+    return payment_service.update(db, payment_id, data)
 
 
 @router.delete("/payments/{payment_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_payments"))])

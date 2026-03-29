@@ -5,6 +5,7 @@ from app.models.fee import Fee
 from app.models.mark import Mark
 from app.models.menu import Menu
 from app.models.parent import Parent
+from app.models.password_reset_token import PasswordResetToken
 from app.models.permission import Permission, RolePermission, UserPermission
 from app.models.payment import Payment
 from app.models.role import Role
@@ -39,6 +40,7 @@ __all__ = [
 	"Fee",
 	"Payment",
 	"Menu",
+	"PasswordResetToken",
 	"UserRole",
 	"RolePermission",
 	"UserPermission",

@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta, timezone
+import hashlib
+import hmac
+import secrets
 import uuid
 
 import jwt
@@ -41,3 +44,18 @@ def decode_token(token: str) -> dict:
         settings.SECRET_KEY,
         algorithms=[settings.ALGORITHM],
     )
+
+
+def generate_password_reset_token() -> str:
+    # URL-safe random token suitable for reset links.
+    return secrets.token_urlsafe(48)
+
+
+def hash_password_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def verify_password_reset_token(token: str, token_hash: str) -> bool:
+    calculated = hash_password_reset_token(token)
+    return hmac.compare_digest(calculated, token_hash)
+

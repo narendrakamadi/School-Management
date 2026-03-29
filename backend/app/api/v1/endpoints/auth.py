@@ -3,7 +3,15 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.schemas.auth import LoginRequest, LogoutResponse, TokenResponse
+from app.schemas.auth import (
+    ForgotPasswordRequest,
+    ForgotPasswordResponse,
+    LoginRequest,
+    LogoutResponse,
+    MessageResponse,
+    ResetPasswordRequest,
+    TokenResponse,
+)
 from app.services.auth_service import AuthService
 
 router = APIRouter()
@@ -27,4 +35,15 @@ def logout(
     db: Session = Depends(get_db),
 ):
     return service.logout(db, token.credentials)
+
+
+@router.post("/forgot-password", response_model=ForgotPasswordResponse)
+def forgot_password(data: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    return service.request_password_reset(db, data.email)
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
+    return service.reset_password(db, data.token, data.new_password)
+
 

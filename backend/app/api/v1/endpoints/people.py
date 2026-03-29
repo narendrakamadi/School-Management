@@ -57,6 +57,11 @@ def get_student(student_id: int, db: Session = Depends(get_db)):
     return student_service.get(db, student_id)
 
 
+@router.put("/students/{student_id}", response_model=StudentOut, dependencies=[Depends(require_any_permission("update_students"))])
+def update_student(student_id: int, data: StudentCreate, db: Session = Depends(get_db)):
+    return student_service.update(db, student_id, data)
+
+
 @router.delete("/students/{student_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_students"))])
 def delete_student(student_id: int, db: Session = Depends(get_db)):
     return student_service.delete(db, student_id)
@@ -75,6 +80,11 @@ def list_teachers(db: Session = Depends(get_db)):
 @router.get("/teachers/{teacher_id}", response_model=TeacherOut, dependencies=[Depends(require_any_permission("read_teachers"))])
 def get_teacher(teacher_id: int, db: Session = Depends(get_db)):
     return teacher_service.get(db, teacher_id)
+
+
+@router.put("/teachers/{teacher_id}", response_model=TeacherOut, dependencies=[Depends(require_any_permission("update_teachers"))])
+def update_teacher(teacher_id: int, data: TeacherCreate, db: Session = Depends(get_db)):
+    return teacher_service.update(db, teacher_id, data)
 
 
 @router.delete("/teachers/{teacher_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_teachers"))])
@@ -97,6 +107,11 @@ def get_parent(parent_id: int, db: Session = Depends(get_db)):
     return parent_service.get(db, parent_id)
 
 
+@router.put("/parents/{parent_id}", response_model=ParentOut, dependencies=[Depends(require_any_permission("update_parents"))])
+def update_parent(parent_id: int, data: ParentCreate, db: Session = Depends(get_db)):
+    return parent_service.update(db, parent_id, data)
+
+
 @router.delete("/parents/{parent_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_parents"))])
 def delete_parent(parent_id: int, db: Session = Depends(get_db)):
     return parent_service.delete(db, parent_id)
@@ -115,6 +130,11 @@ def list_staff_members(db: Session = Depends(get_db)):
 @router.get("/staff/{staff_id}", response_model=StaffOut, dependencies=[Depends(require_any_permission("read_staff"))])
 def get_staff_member(staff_id: int, db: Session = Depends(get_db)):
     return staff_service.get(db, staff_id)
+
+
+@router.put("/staff/{staff_id}", response_model=StaffOut, dependencies=[Depends(require_any_permission("update_staff"))])
+def update_staff_member(staff_id: int, data: StaffCreate, db: Session = Depends(get_db)):
+    return staff_service.update(db, staff_id, data)
 
 
 @router.delete("/staff/{staff_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_staff"))])

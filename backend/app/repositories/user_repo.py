@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import func
 
 from app.models.permission import UserPermission
 from app.models.role import Role
@@ -49,3 +50,16 @@ class UserRepository:
             .filter(User.username == username)
             .first()
         )
+
+    def get_by_email(self, db: Session, email: str):
+        normalized_email = email.strip().lower()
+        return (
+            db.query(User)
+            .options(
+                selectinload(User.roles).selectinload(Role.permissions),
+                selectinload(User.permission_overrides).selectinload(UserPermission.permission),
+            )
+            .filter(func.lower(User.email) == normalized_email)
+            .first()
+        )
+

@@ -6,6 +6,14 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class UserInfo(BaseModel):
+    id: int | str
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+    username: str | None = None
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -13,6 +21,7 @@ class TokenResponse(BaseModel):
     is_super_admin: bool = False
     roles: list[str] = Field(default_factory=list)
     permissions: list[str] = Field(default_factory=list)
+    user: UserInfo | None = None
 
 
 class LogoutResponse(BaseModel):

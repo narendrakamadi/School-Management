@@ -68,6 +68,13 @@ class AuthService:
             "is_super_admin": bool(user.is_super_admin),
             "roles": roles,
             "permissions": permissions,
+            "user": {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "username": user.username,
+            },
         }
 
     def logout(self, db, token: str):

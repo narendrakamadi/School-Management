@@ -1,9 +1,10 @@
 import React from "react";
 import type { AccessRule } from "../config/acl";
+import type { ComponentType } from "react";
 
 export interface AppRoute {
     path: string;
-    element: React.LazyExoticComponent<React.ComponentType>;
+    element: React.LazyExoticComponent<ComponentType>;
     access?: AccessRule;
 }
 
@@ -27,6 +28,13 @@ export const routes: AppRoute[] = [
             () => import("../features/teachers/pages/TeachersPage"),
         ),
         access: { anyPermissions: ["read_teachers"] },
+    },
+    {
+        path: "/teachers/add",
+        element: React.lazy(
+            () => import("../features/teachers/pages/AddTeacher") as Promise<{ default: ComponentType }>
+        ),
+        access: { anyPermissions: ["create_teachers"] },
     },
     {
         path: "/staff",

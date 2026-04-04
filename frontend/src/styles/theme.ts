@@ -30,6 +30,39 @@ const Theme = createTheme({
                 },
             },
         },
+        MuiSelect: {
+            styleOverrides: {
+                root: {
+                    height: 45,
+                    display: "flex",
+                    alignItems: "center",
+                },
+                select: {
+                    padding: "16.5px 14px", // same as TextField input
+                    display: "flex",
+                    alignItems: "center",
+                },
+            },
+        },
+
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    height: 45,
+                },
+                input: {
+                    padding: "16.5px 14px",
+                },
+            },
+        },
+
+        MuiInputLabel: {
+            styleOverrides: {
+                root: {
+                    top: "-6px",
+                },
+            },
+        },
         MuiTable: {
             defaultProps: {
                 size: "small",

@@ -14,9 +14,11 @@ import {
     TableRow,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePermission } from "../../../hooks/usePermission";
+import { teacherApi, userApi } from "../../../api/endpoints/teacherApi";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -39,58 +41,101 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 function createData(
     id: string,
+    employeeId: string,
     name: string,
     email: string,
     username: string,
     phone: string,
-    city: string,
+    status: string,
 ) {
-    return { id, name, email, username, phone, city };
+    return { id, employeeId, name, email, username, phone, status };
 }
 
-const rows = [
-    createData("1", "Narendra", "narendra@gmail.com", "narendra", "9922422432", "Pune"),
-    createData("2", "Mohan", "mohan@gmail.com", "mohan", "9922422432", "Pune"),
-    createData("3", "Seema", "seema@gmail.com", "seema", "9922422432", "Pune"),
-    createData("4", "Manasvi", "manasvi@gmail.com", "manasvi", "9922422432", "Pune"),
-    createData("5", "Ayush", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("6", "Ajay", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("7", "Ramesh", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("8", "Rahul", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("9", "Radha", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("10", "Mahesh", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("11", "Narendra", "narendra@gmail.com", "narendra", "9922422432", "Pune"),
-    createData("12", "Mohan", "mohan@gmail.com", "mohan", "9922422432", "Pune"),
-    createData("13", "Seema", "seema@gmail.com", "seema", "9922422432", "Pune"),
-    createData("14", "Manasvi", "manasvi@gmail.com", "manasvi", "9922422432", "Pune"),
-    createData("15", "Ayush", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("16", "Ajay", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("17", "Ramesh", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("18", "Rahul", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("19", "Radha", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("20", "Mahesh", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("21", "Narendra", "narendra@gmail.com", "narendra", "9922422432", "Pune"),
-    createData("22", "Mohan", "mohan@gmail.com", "mohan", "9922422432", "Pune"),
-    createData("23", "Seema", "seema@gmail.com", "seema", "9922422432", "Pune"),
-    createData("24", "Manasvi", "manasvi@gmail.com", "manasvi", "9922422432", "Pune"),
-    createData("25", "Ayush", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("26", "Ajay", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("27", "Ramesh", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("28", "Rahul", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("29", "Radha", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-    createData("30", "Mahesh", "ayush@gmail.com", "ayush", "9922422432", "Pune"),
-];
-
 const TeachersPage = () => {
+    const navigate = useNavigate();
     const { can } = usePermission();
 
+    const [rows, setRows] = useState<ReturnType<typeof createData>[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const rowsPerPage = 10;
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchTeachers = async () => {
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                const teachers = await teacherApi.list();
+                const users = await Promise.all(
+                    teachers.map(async (teacher) => {
+                        try {
+                            return await userApi.getById(teacher.user_id);
+                        } catch {
+                            return null;
+                        }
+                    }),
+                );
+
+                const mappedRows = teachers.map((teacher, index) => {
+                    const user = users[index];
+                    console.log(user)
+                    const fullName = `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim();
+                    const phone = user?.phone ?? "-";
+
+                    return createData(
+                        String(teacher.id),
+                        teacher.employee_id || "-",
+                        fullName || "-",
+                        user?.email ?? "-",
+                        user?.username ?? "-",
+                        phone,
+                        teacher.status || "-",
+                    );
+                });
+
+                if (isMounted) {
+                    setRows(mappedRows);
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setRows([]);
+                    setError(err instanceof Error ? err.message : "Failed to fetch teachers");
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        void fetchTeachers();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        const maxPage = Math.max(0, totalPages - 1);
+        if (page > maxPage) {
+            setPage(maxPage);
+        }
+    }, [page, totalPages]);
 
     const handleChangePage = (_event: ChangeEvent<unknown>, value: number) => {
         setPage(value - 1);
     };
+
+    const handleAddTeacher = () => {
+        navigate("/teachers/add");
+    };
+
+    const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
     return (
         <Box>
@@ -103,7 +148,9 @@ const TeachersPage = () => {
                 <Typography variant="h5">Manage Teachers</Typography>
 
                 {can("create_teachers") && (
-                    <Button variant="contained">Add Teacher</Button>
+                    <Button variant="contained" onClick={handleAddTeacher}>
+                        Add Teacher
+                    </Button>
                 )}
             </Box>
 
@@ -111,27 +158,53 @@ const TeachersPage = () => {
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell sx={{ width: 50 }}>#</StyledTableCell>
+                            <StyledTableCell sx={{ width: 50 }}>ID</StyledTableCell>
+                            <StyledTableCell>Employee ID</StyledTableCell>
                             <StyledTableCell>Name</StyledTableCell>
                             <StyledTableCell>Email</StyledTableCell>
                             <StyledTableCell>Username</StyledTableCell>
                             <StyledTableCell>Phone</StyledTableCell>
-                            <StyledTableCell>City</StyledTableCell>
+                            <StyledTableCell>Status</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row) => (
+                        {isLoading && (
+                            <StyledTableRow>
+                                <StyledTableCell colSpan={7} align="center">
+                                    Loading teachers...
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        )}
+
+                        {!isLoading && error && (
+                            <StyledTableRow>
+                                <StyledTableCell colSpan={7} align="center">
+                                    {error}
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        )}
+
+                        {!isLoading && !error && paginatedRows.length === 0 && (
+                            <StyledTableRow>
+                                <StyledTableCell colSpan={7} align="center">
+                                    No teachers found.
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        )}
+
+                        {!isLoading &&
+                            !error &&
+                            paginatedRows.map((row) => (
                                 <StyledTableRow key={row.id}>
                                     <StyledTableCell component="th" scope="row" sx={{ width: 50 }}>
                                         {row.id}
                                     </StyledTableCell>
+                                    <StyledTableCell>{row.employeeId}</StyledTableCell>
                                     <StyledTableCell>{row.name}</StyledTableCell>
                                     <StyledTableCell>{row.email}</StyledTableCell>
                                     <StyledTableCell>{row.username}</StyledTableCell>
                                     <StyledTableCell>{row.phone}</StyledTableCell>
-                                    <StyledTableCell>{row.city}</StyledTableCell>
+                                    <StyledTableCell>{row.status}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                     </TableBody>

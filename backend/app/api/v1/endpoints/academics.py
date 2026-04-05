@@ -60,6 +60,11 @@ def get_class(class_id: int, db: Session = Depends(get_db), context=Depends(get_
     return class_service.get(db, class_id, current_user=context.user)
 
 
+@router.put("/classes/{class_id}", response_model=ClassOut, dependencies=[Depends(require_any_permission("update_classes"))])
+def update_class(class_id: int, data: ClassCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return class_service.update(db, class_id, data, current_user=context.user)
+
+
 @router.delete("/classes/{class_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_classes"))])
 def delete_class(class_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
     return class_service.delete(db, class_id, current_user=context.user)
@@ -80,6 +85,11 @@ def get_section(section_id: int, db: Session = Depends(get_db), context=Depends(
     return section_service.get(db, section_id, current_user=context.user)
 
 
+@router.put("/sections/{section_id}", response_model=SectionOut, dependencies=[Depends(require_any_permission("update_sections"))])
+def update_section(section_id: int, data: SectionCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return section_service.update(db, section_id, data, current_user=context.user)
+
+
 @router.delete("/sections/{section_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_sections"))])
 def delete_section(section_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
     return section_service.delete(db, section_id, current_user=context.user)
@@ -98,6 +108,11 @@ def list_subjects(db: Session = Depends(get_db), context=Depends(get_current_use
 @router.get("/subjects/{subject_id}", response_model=SubjectOut, dependencies=[Depends(require_any_permission("read_subjects"))])
 def get_subject(subject_id: int, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
     return subject_service.get(db, subject_id, current_user=context.user)
+
+
+@router.put("/subjects/{subject_id}", response_model=SubjectOut, dependencies=[Depends(require_any_permission("update_subjects"))])
+def update_subject(subject_id: int, data: SubjectCreate, db: Session = Depends(get_db), context=Depends(get_current_user_with_school_context)):
+    return subject_service.update(db, subject_id, data, current_user=context.user)
 
 
 @router.delete("/subjects/{subject_id}", response_model=DeleteResponse, dependencies=[Depends(require_any_permission("delete_subjects"))])

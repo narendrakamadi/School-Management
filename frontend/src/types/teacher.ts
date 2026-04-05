@@ -72,6 +72,14 @@ export interface SchoolClass {
     updated_at?: string;
 }
 
+export interface CreateSchoolClassPayload {
+    name: string;
+}
+
+export interface UpdateSchoolClassPayload {
+    name: string;
+}
+
 export interface Section {
     id: number;
     name: string;
@@ -80,3 +88,12 @@ export interface Section {
     updated_at?: string;
 }
 
+export interface CreateSectionPayload {
+    class_id: number;
+    name: string;
+}
+
+export interface UpdateSectionPayload {
+    class_id: number;
+    name: string;
+}

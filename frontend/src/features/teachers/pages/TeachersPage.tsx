@@ -4,6 +4,7 @@ import {
     Box,
     Button,
     Stack,
+    TextField,
     Paper,
     Pagination,
     Table,
@@ -14,7 +15,7 @@ import {
     TableRow,
 } from "@mui/material";
 import { tableCellClasses } from "@mui/material/TableCell";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePermission } from "../../../hooks/usePermission";
@@ -58,9 +59,28 @@ const TeachersPage = () => {
     const [rows, setRows] = useState<ReturnType<typeof createData>[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
     const [page, setPage] = useState(0);
     const rowsPerPage = 10;
-    const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage));
+
+    const filteredRows = useMemo(() => {
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) {
+            return rows;
+        }
+
+        return rows.filter(
+            (row) =>
+                row.employeeId.toLowerCase().includes(query) ||
+                row.name.toLowerCase().includes(query) ||
+                row.email.toLowerCase().includes(query) ||
+                row.username.toLowerCase().includes(query) ||
+                row.phone.toLowerCase().includes(query) ||
+                row.status.toLowerCase().includes(query),
+        );
+    }, [rows, searchTerm]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
 
     useEffect(() => {
         let isMounted = true;
@@ -83,7 +103,6 @@ const TeachersPage = () => {
 
                 const mappedRows = teachers.map((teacher, index) => {
                     const user = users[index];
-                    console.log(user)
                     const fullName = `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim();
                     const phone = user?.phone ?? "-";
 
@@ -131,11 +150,19 @@ const TeachersPage = () => {
         setPage(value - 1);
     };
 
+    const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+        setPage(0);
+    };
+
     const handleAddTeacher = () => {
         navigate("/teachers/add");
     };
 
-    const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const paginatedRows = filteredRows.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage,
+    );
 
     return (
         <Box>
@@ -144,14 +171,29 @@ const TeachersPage = () => {
                 justifyContent="space-between"
                 alignItems="center"
                 mb={2}
+                gap={2}
             >
                 <Typography variant="h5">Manage Teachers</Typography>
 
-                {can("create_teachers") && (
-                    <Button variant="contained" onClick={handleAddTeacher}>
-                        Add Teacher
-                    </Button>
-                )}
+                <Stack direction="row" spacing={1.5} alignItems="center">
+                    <TextField
+                        size="small"
+                        placeholder="Search teachers"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        sx={{
+                            width: { xs: 220, sm: 320, md: 380 },
+                            "& .MuiOutlinedInput-root": {
+                                height: 36,
+                            },
+                        }}
+                    />
+                    {can("create_teachers") && (
+                        <Button variant="contained" onClick={handleAddTeacher}>
+                            Add Teacher
+                        </Button>
+                    )}
+                </Stack>
             </Box>
 
             <TableContainer component={Paper}>

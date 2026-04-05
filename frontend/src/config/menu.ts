@@ -28,13 +28,21 @@ export const appMenuItems: AppMenuItem[] = [
         access: { anyPermissions: ["read_staff"] },
     },
     {
-        key: "classes-sections",
-        label: "Classes & Sections",
-        access: { anyPermissions: ["read_classes", "read_sections"] },
+        key: "classes",
+        label: "Classes",
+        to: "/classes",
+        access: { anyPermissions: ["read_classes"] },
+    },
+    {
+        key: "sections",
+        label: "Sections",
+        to: "/sections",
+        access: { anyPermissions: ["read_sections"] },
     },
     {
         key: "subjects",
         label: "Subjects",
+        to: "/subjects",
         access: { anyPermissions: ["read_subjects"] },
     },
     {
@@ -82,4 +90,3 @@ export const appMenuItems: AppMenuItem[] = [
         },
     },
 ];
-

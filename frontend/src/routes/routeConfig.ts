@@ -37,6 +37,27 @@ export const routes: AppRoute[] = [
         access: { anyPermissions: ["create_teachers"] },
     },
     {
+        path: "/subjects",
+        element: React.lazy(
+            () => import("../features/subjects/pages/SubjectsPage"),
+        ),
+        access: { anyPermissions: ["read_subjects"] },
+    },
+    {
+        path: "/classes",
+        element: React.lazy(
+            () => import("../features/classes/pages/ClassesPage"),
+        ),
+        access: { anyPermissions: ["read_classes"] },
+    },
+    {
+        path: "/sections",
+        element: React.lazy(
+            () => import("../features/sections/pages/SectionsPage"),
+        ),
+        access: { anyPermissions: ["read_sections"] },
+    },
+    {
         path: "/staff",
         element: React.lazy(
             () => import("../features/staff/pages/StaffPage"),
